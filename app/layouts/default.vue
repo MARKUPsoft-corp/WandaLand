@@ -10,7 +10,7 @@
         <div class="col-lg-2 sidebar p-3">
           <LayoutSidebar />
         </div>
-        <main class="col-12 col-lg-7 main-content py-3 px-2 px-lg-4">
+        <main class="col-12 col-lg-7 main-content pt-3 px-2 px-lg-4">
           <slot />
         </main>
         <div class="col-lg-3 sidebar p-3 d-none d-lg-block">
