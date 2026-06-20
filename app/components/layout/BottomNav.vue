@@ -31,8 +31,8 @@
         class="bottom-nav-item text-center"
         @click="$emit('showTrends')"
       >
-        <i class="bi bi-bell fs-5 d-block"></i>
-        <span class="bottom-nav-label">Notifs</span>
+        <i class="bi bi-fire fs-5 d-block"></i>
+        <span class="bottom-nav-label">Wandaful</span>
       </button>
 
       <template v-if="authStore.isAuthenticated">

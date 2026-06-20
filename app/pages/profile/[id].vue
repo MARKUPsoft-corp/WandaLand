@@ -101,7 +101,7 @@
           </div>
 
           <!-- Stats -->
-          <div class="d-flex gap-4 mt-3">
+          <div class="d-flex flex-wrap gap-4 mt-3">
             <div class="profile-stat">
               <span class="fw-bold">{{ userPosts.length }}</span>
               <span class="text-wanda-muted ms-1">wandas</span>
@@ -113,6 +113,10 @@
             <div class="profile-stat profile-stat-clickable" @click="openFollowList('following')">
               <span class="fw-bold">{{ followData.followingCount.value }}</span>
               <span class="text-wanda-muted ms-1">abonnements</span>
+            </div>
+            <div v-if="isOwnProfile && suggestions.length > 0" class="profile-stat profile-stat-clickable" @click="openFollowList('suggestions')">
+              <span class="fw-bold">{{ suggestions.length }}</span>
+              <span class="text-wanda-muted ms-1">suggestions</span>
             </div>
           </div>
         </div>
@@ -221,7 +225,7 @@
         <div v-if="showFollowList" class="follow-modal-overlay" @click.self="showFollowList = false">
           <div class="follow-modal">
             <div class="follow-modal-header">
-              <h6 class="fw-bold mb-0">{{ followListType === 'followers' ? 'Abonnés' : 'Abonnements' }}</h6>
+              <h6 class="fw-bold mb-0">{{ followListType === 'followers' ? 'Abonnés' : followListType === 'following' ? 'Abonnements' : 'Suggestions' }}</h6>
               <button class="btn btn-link text-wanda-muted p-0" @click="showFollowList = false">
                 <i class="bi bi-x-lg"></i>
               </button>
@@ -232,7 +236,7 @@
               </div>
               <div v-else-if="followListUsers.length === 0" class="text-center py-4 text-wanda-muted">
                 <i class="bi bi-people" style="font-size: 2rem;"></i>
-                <p class="mt-2 mb-0 small">Aucun {{ followListType === 'followers' ? 'abonné' : 'abonnement' }}</p>
+                <p class="mt-2 mb-0 small">Aucun {{ followListType === 'followers' ? 'abonné' : followListType === 'following' ? 'abonnement' : 'suggestion' }}</p>
               </div>
               <template v-else>
                 <div
@@ -302,35 +306,51 @@ const loading = ref(true)
 const currentTab = ref<'wandas' | 'likes' | 'about'>('wandas')
 const showEditModal = ref(false)
 
+interface SuggestionUser {
+  id: string
+  displayName: string
+  username: string
+  avatarUrl: string
+}
+const suggestions = ref<SuggestionUser[]>([])
+
 const targetUid = route.params.id as string
 const followData = useFollow(targetUid)
 
 const showFollowList = ref(false)
-const followListType = ref<'followers' | 'following'>('followers')
+const followListType = ref<'followers' | 'following' | 'suggestions'>('followers')
 const followListUsers = ref<{ id: string; displayName: string; username: string; avatarUrl: string; isFollowedByMe: boolean }[]>([])
 const followListLoading = ref(false)
 
-const openFollowList = async (type: 'followers' | 'following') => {
+const openFollowList = async (type: 'followers' | 'following' | 'suggestions') => {
   followListType.value = type
   showFollowList.value = true
   followListLoading.value = true
   try {
-    const rawUsers = type === 'followers'
-      ? await followData.fetchFollowersList()
-      : await followData.fetchFollowingList()
+    if (type === 'suggestions') {
+      // Map suggestions to follow list format
+      followListUsers.value = suggestions.value.map(s => ({
+        ...s,
+        isFollowedByMe: false,
+      }))
+    } else {
+      const rawUsers = type === 'followers'
+        ? await followData.fetchFollowersList()
+        : await followData.fetchFollowingList()
 
-    // Check which ones the current user follows
-    const rtdb = getFirebaseRtdb()
-    const enriched = []
-    for (const u of rawUsers) {
-      let isFollowedByMe = false
-      if (authStore.firebaseUid && u.id !== authStore.firebaseUid) {
-        const snap = await get(dbRef(rtdb, `following/${authStore.firebaseUid}/${u.id}`))
-        isFollowedByMe = snap.exists()
+      // Check which ones the current user follows
+      const rtdb = getFirebaseRtdb()
+      const enriched = []
+      for (const u of rawUsers) {
+        let isFollowedByMe = false
+        if (authStore.firebaseUid && u.id !== authStore.firebaseUid) {
+          const snap = await get(dbRef(rtdb, `following/${authStore.firebaseUid}/${u.id}`))
+          isFollowedByMe = snap.exists()
+        }
+        enriched.push({ ...u, isFollowedByMe })
       }
-      enriched.push({ ...u, isFollowedByMe })
+      followListUsers.value = enriched
     }
-    followListUsers.value = enriched
   } catch (err) {
     console.error('Error loading follow list:', err)
   } finally {
@@ -350,6 +370,20 @@ const toggleFollowInList = async (u: { id: string; isFollowedByMe: boolean }) =>
     await set(dbRef(rtdb, `following/${authStore.firebaseUid}/${u.id}`), true)
     await set(dbRef(rtdb, `followers/${u.id}/${authStore.firebaseUid}`), true)
     u.isFollowedByMe = true
+
+    // Remove from suggestions if applicable
+    suggestions.value = suggestions.value.filter(s => s.id !== u.id)
+
+    // Send notification
+    try {
+      const { sendNotification } = await import('~/composables/useNotifications')
+      await sendNotification(u.id, {
+        type: 'new_follower',
+        fromUserId: authStore.firebaseUid,
+        fromDisplayName: authStore.user?.displayName || '',
+        fromAvatarUrl: authStore.user?.avatarUrl || '',
+      })
+    } catch (_) { /* silent */ }
   }
 }
 
@@ -478,9 +512,9 @@ onMounted(async () => {
             createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : new Date().toISOString(),
             author: {
               id: d.authorId || '',
-              username: d.authorUsername || '',
-              displayName: d.authorDisplayName || '',
-              avatarUrl: d.authorAvatarUrl || '',
+              username: d.authorId === uid ? (user.value?.username || d.authorUsername || '') : (d.authorUsername || ''),
+              displayName: d.authorId === uid ? (user.value?.displayName || d.authorDisplayName || '') : (d.authorDisplayName || ''),
+              avatarUrl: d.authorId === uid ? (user.value?.avatarUrl || d.authorAvatarUrl || '') : (d.authorAvatarUrl || ''),
             },
             _count: {
               likes: d.likesCount || 0,
@@ -507,6 +541,28 @@ onMounted(async () => {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
       }
+
+      // Load suggestions if own profile
+      if (uid === authStore.firebaseUid) {
+        const followingSnap = await get(dbRef(rtdb, `following/${uid}`))
+        const followingIds = followingSnap.exists() ? Object.keys(followingSnap.val()) : []
+        const usersSnap = await get(dbRef(rtdb, 'users'))
+        if (usersSnap.exists()) {
+          const sug: SuggestionUser[] = []
+          usersSnap.forEach((child) => {
+            const cid = child.key!
+            if (cid === uid || followingIds.includes(cid)) return
+            const u = child.val()
+            sug.push({
+              id: cid,
+              displayName: u.displayName || '',
+              username: u.username || '',
+              avatarUrl: u.avatarUrl || '',
+            })
+          })
+          suggestions.value = sug.slice(0, 5)
+        }
+      }
     } else {
       user.value = null
     }
@@ -521,6 +577,27 @@ onMounted(async () => {
 onUnmounted(() => {
   followData.stopListening()
 })
+
+const followSuggestion = async (s: SuggestionUser) => {
+  const rtdb = getFirebaseRtdb()
+  if (!authStore.firebaseUid) return
+
+  await set(dbRef(rtdb, `following/${authStore.firebaseUid}/${s.id}`), true)
+  await set(dbRef(rtdb, `followers/${s.id}/${authStore.firebaseUid}`), true)
+
+  // Remove from suggestions
+  suggestions.value = suggestions.value.filter(u => u.id !== s.id)
+
+  try {
+    const { sendNotification } = await import('~/composables/useNotifications')
+    await sendNotification(s.id, {
+      type: 'new_follower',
+      fromUserId: authStore.firebaseUid,
+      fromDisplayName: authStore.user?.displayName || '',
+      fromAvatarUrl: authStore.user?.avatarUrl || '',
+    })
+  } catch (_) { /* silent */ }
+}
 </script>
 
 <style scoped lang="scss">

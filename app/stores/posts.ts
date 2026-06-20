@@ -190,6 +190,9 @@ export const usePostsStore = defineStore('posts', {
         this.posts = posts.reverse()
         this.hasMore = false
 
+        // Override denormalized author data with latest user profiles
+        await this.refreshAuthorProfiles()
+
         // Load interests for personalized sorting
         await this.loadUserInterests()
 
@@ -198,6 +201,36 @@ export const usePostsStore = defineStore('posts', {
         console.error('[PostsStore] fetchPosts error:', err)
       } finally {
         this.loading = false
+      }
+    },
+
+    async refreshAuthorProfiles() {
+      const rtdb = getFirebaseRtdb()
+      const uniqueAuthorIds = [...new Set(this.posts.map(p => p.author.id).filter(Boolean))]
+
+      const profileCache: Record<string, { displayName: string; username: string; avatarUrl: string }> = {}
+      for (const uid of uniqueAuthorIds) {
+        try {
+          const snap = await get(dbRef(rtdb, `users/${uid}`))
+          if (snap.exists()) {
+            const u = snap.val()
+            profileCache[uid] = {
+              displayName: u.displayName || '',
+              username: u.username || '',
+              avatarUrl: u.avatarUrl || '',
+            }
+          }
+        } catch (_) { /* silent */ }
+      }
+
+      // Apply latest profiles to all posts
+      for (const post of this.posts) {
+        const profile = profileCache[post.author.id]
+        if (profile) {
+          post.author.displayName = profile.displayName
+          post.author.username = profile.username
+          post.author.avatarUrl = profile.avatarUrl
+        }
       }
     },
 

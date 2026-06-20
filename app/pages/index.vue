@@ -1,9 +1,14 @@
 <template>
   <div>
+    <!-- Loading auth state -->
+    <div v-if="authStore.loading" class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
     <!-- ============================== -->
     <!-- VISITOR: X-Style Landing Page  -->
     <!-- ============================== -->
-    <div v-if="!authStore.isAuthenticated" class="landing-page">
+    <div v-else-if="!authStore.isAuthenticated" class="landing-page">
 
       <div class="landing-container">
         <!-- LEFT: Tagline + Auth -->

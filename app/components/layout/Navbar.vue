@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Notification } from '~/composables/useNotifications'
+import type { WandaNotification } from '~/composables/useNotifications'
 
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
@@ -174,7 +174,7 @@ const formatNotifTime = (ts: number) => {
   return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
-const handleNotifClick = async (n: Notification) => {
+const handleNotifClick = async (n: WandaNotification) => {
   if (!n.read) await notifs.markAsRead(n.id)
   showNotifs.value = false
   if (n.postId && (n.type === 'comment_reply' || n.type === 'post_like' || n.type === 'comment_like')) {

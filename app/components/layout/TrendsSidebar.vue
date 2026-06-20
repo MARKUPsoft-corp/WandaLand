@@ -2,7 +2,7 @@
   <div>
     <div class="card border-wanda">
       <div class="card-body">
-        <h6 class="fw-bold mb-3"><i class="bi bi-trophy me-2 text-primary"></i>Wandas tendance</h6>
+        <h6 class="fw-bold mb-3"><i class="bi bi-trophy me-2 text-primary"></i>Wandaful</h6>
 
         <div v-if="loading" class="text-center py-3">
           <div class="spinner-border spinner-border-sm text-primary"></div>

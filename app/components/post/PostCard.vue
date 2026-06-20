@@ -217,13 +217,20 @@ const timeAgo = computed(() => {
 /* Image */
 .post-image-wrapper {
   line-height: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  margin: 0 0.75rem 0.25rem;
+  max-height: 500px;
 }
 
 .post-image {
   width: 100%;
-  max-height: 520px;
+  height: 100%;
+  max-height: 500px;
   object-fit: cover;
+  object-position: center;
   display: block;
+  border-radius: 0.75rem;
 }
 
 /* Action Buttons */
