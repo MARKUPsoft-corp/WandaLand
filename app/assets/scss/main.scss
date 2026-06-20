@@ -1,0 +1,576 @@
+// ========================================
+// WandaLand — Main Stylesheet
+// Flat Design — Light/Dark mode via data-bs-theme
+// ========================================
+
+// 1. Custom Variables (overrides)
+@import 'variables';
+
+// 2. Bootstrap Core
+@import 'bootstrap/scss/bootstrap';
+
+// 3. Bootstrap Icons
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// ========================================
+// Global Styles
+// ========================================
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgba($wanda-blue, 0.15);
+  color: $wanda-text;
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: $wanda-bg-secondary;
+}
+::-webkit-scrollbar-thumb {
+  background: $wanda-border;
+  border-radius: 3px;
+  &:hover {
+    background: $wanda-text-muted;
+  }
+}
+
+// ========================================
+// Light mode custom tokens (default)
+// ========================================
+
+:root,
+[data-bs-theme="light"] {
+  --wanda-bg: #{$wanda-bg};
+  --wanda-bg-secondary: #{$wanda-bg-secondary};
+  --wanda-bg-card: #{$wanda-bg-card};
+  --wanda-bg-surface: #{$wanda-bg-surface};
+  --wanda-border: #{$wanda-border};
+  --wanda-text: #{$wanda-text};
+  --wanda-text-secondary: #{$wanda-text-secondary};
+  --wanda-text-muted: #{$wanda-text-muted};
+  --wanda-blue: #{$wanda-blue};
+  --wanda-blue-hover: #{$wanda-blue-dark};
+  --wanda-btn-secondary-bg: #{$wanda-bg-surface};
+  --wanda-btn-secondary-border: #{$wanda-border};
+  --wanda-btn-secondary-color: #{$wanda-text-secondary};
+}
+
+// ========================================
+// Dark mode custom tokens
+// ========================================
+
+[data-bs-theme="dark"] {
+  --wanda-bg: #0F1117;
+  --wanda-bg-secondary: #161821;
+  --wanda-bg-card: #1C1E2A;
+  --wanda-bg-surface: #252836;
+  --wanda-border: #2E3144;
+  --wanda-text: #E8EAED;
+  --wanda-text-secondary: #B0B3BE;
+  --wanda-text-muted: #6B7084;
+  --wanda-blue: #4B83F0;
+  --wanda-blue-hover: #6B9BF5;
+  --wanda-btn-secondary-bg: #252836;
+  --wanda-btn-secondary-border: #2E3144;
+  --wanda-btn-secondary-color: #B0B3BE;
+
+  --bs-body-bg: #0F1117;
+  --bs-body-color: #E8EAED;
+  --bs-tertiary-bg: #1C1E2A;
+  --bs-secondary-bg: #161821;
+  --bs-border-color: #2E3144;
+  --bs-card-bg: #1C1E2A;
+  --bs-card-border-color: #2E3144;
+
+  &::-webkit-scrollbar-track { background: #161821; }
+  &::-webkit-scrollbar-thumb { background: #2E3144; }
+
+  ::selection {
+    background: rgba($wanda-blue, 0.3);
+    color: #E8EAED;
+  }
+
+  // Form controls — dark mode
+  .form-control,
+  .form-select {
+    background-color: #1C1E2A;
+    color: #E8EAED;
+    border-color: #2E3144;
+
+    &::placeholder {
+      color: #6B7084;
+    }
+
+    &:focus {
+      background-color: #252836;
+      color: #E8EAED;
+      border-color: #4B83F0;
+    }
+  }
+
+  .form-check-input {
+    background-color: #252836;
+    border-color: #2E3144;
+  }
+
+  .form-text {
+    color: #6B7084;
+  }
+}
+
+// ========================================
+// Utility Classes
+// ========================================
+
+.bg-wanda-card   { background-color: var(--wanda-bg-card) !important; }
+.bg-wanda-surface { background-color: var(--wanda-bg-surface) !important; }
+.bg-wanda-secondary { background-color: var(--wanda-bg-secondary) !important; }
+.text-wanda-muted { color: var(--wanda-text-muted) !important; }
+.text-wanda-secondary { color: var(--wanda-text-secondary) !important; }
+.border-wanda { border-color: var(--wanda-border) !important; }
+
+// ========================================
+// CARD — clean, theme-aware
+// ========================================
+
+.card {
+  box-shadow: none;
+  background-color: var(--wanda-bg-card);
+  border-color: var(--wanda-border);
+  border-radius: 0.875rem;
+  transition: border-color 0.15s ease;
+}
+
+// ========================================
+// BUTTONS — WandaLand custom design
+// ========================================
+
+.btn {
+  box-shadow: none !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: 0.625rem;
+  transition: all 0.15s ease;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Primary — solid blue, slightly taller, pill-ish
+.btn-primary {
+  background-color: var(--wanda-blue);
+  border-color: var(--wanda-blue);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+
+  &:hover, &:focus {
+    background-color: var(--wanda-blue-hover);
+    border-color: var(--wanda-blue-hover);
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+// Large primary (auth pages)
+.btn-lg.btn-primary {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+}
+
+// Outline primary — lightweight, clean border
+.btn-outline-primary {
+  border-color: var(--wanda-blue);
+  color: var(--wanda-blue);
+  background: transparent;
+
+  &:hover, &:focus {
+    background-color: var(--wanda-blue);
+    border-color: var(--wanda-blue);
+    color: #fff;
+  }
+}
+
+// Secondary ghost button — subtle, for non-primary actions
+.btn-outline-secondary {
+  border-color: var(--wanda-btn-secondary-border);
+  color: var(--wanda-btn-secondary-color);
+  background: transparent;
+
+  &:hover, &:focus {
+    background-color: var(--wanda-bg-surface);
+    border-color: var(--wanda-border);
+    color: var(--wanda-text);
+  }
+}
+
+// Small buttons — tighter
+.btn-sm {
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
+  border-radius: 0.5rem;
+}
+
+// Icon-only buttons (theme toggle, search, etc.)
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  border: 1px solid var(--wanda-border);
+  background: var(--wanda-bg-card);
+  color: var(--wanda-text-muted);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--wanda-bg-surface);
+    color: var(--wanda-text);
+    border-color: var(--wanda-border);
+  }
+
+  &:active {
+    transform: scale(0.93);
+  }
+}
+
+// ========================================
+// NAVBAR — WandaLand custom
+// ========================================
+
+.wanda-navbar {
+  background-color: var(--wanda-bg-card);
+  border-bottom: 1px solid var(--wanda-border);
+  padding: 0.5rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+
+  .navbar-brand {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: var(--wanda-blue) !important;
+    gap: 0.5rem;
+
+    img {
+      height: 30px;
+      width: auto;
+    }
+  }
+}
+
+// ========================================
+// SEARCH — custom search bar
+// ========================================
+
+.wanda-search {
+  position: relative;
+  max-width: 380px;
+  width: 100%;
+
+  .wanda-search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--wanda-text-muted);
+    font-size: 0.875rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .wanda-search-input {
+    width: 100%;
+    padding: 0.5rem 0.875rem 0.5rem 2.5rem;
+    font-size: 0.875rem;
+    border-radius: 2rem;
+    border: 1px solid var(--wanda-border);
+    background: var(--wanda-bg-surface);
+    color: var(--wanda-text);
+    outline: none;
+    transition: all 0.15s ease;
+
+    &::placeholder {
+      color: var(--wanda-text-muted);
+    }
+
+    &:focus {
+      border-color: var(--wanda-blue);
+      background: var(--wanda-bg-card);
+    }
+  }
+}
+
+// ========================================
+// FORM CONTROLS — custom styling
+// ========================================
+
+.form-control {
+  border-radius: 0.625rem;
+  border-color: var(--wanda-border);
+  background-color: var(--wanda-bg);
+  color: var(--wanda-text);
+  padding: 0.625rem 0.875rem;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: var(--wanda-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--wanda-blue);
+    background-color: var(--wanda-bg);
+    box-shadow: none;
+  }
+}
+
+.form-control-lg {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--wanda-text);
+  margin-bottom: 0.375rem;
+}
+
+.form-text {
+  color: var(--wanda-text-muted);
+  font-size: 0.8125rem;
+}
+
+.form-check-input {
+  border-color: var(--wanda-border);
+  background-color: var(--wanda-bg);
+
+  &:checked {
+    background-color: var(--wanda-blue);
+    border-color: var(--wanda-blue);
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.form-check-label {
+  color: var(--wanda-text-secondary);
+}
+
+// ========================================
+// DROPDOWN — custom
+// ========================================
+
+.dropdown-menu {
+  border-radius: 0.75rem;
+  border: 1px solid var(--wanda-border);
+  background: var(--wanda-bg-card);
+  padding: 0.375rem;
+  min-width: 180px;
+}
+
+.dropdown-item {
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--wanda-text);
+  transition: background 0.1s ease;
+
+  &:hover, &:focus {
+    background: var(--wanda-bg-surface);
+    color: var(--wanda-text);
+  }
+}
+
+.dropdown-divider {
+  border-color: var(--wanda-border);
+  margin: 0.25rem 0;
+}
+
+// ========================================
+// ALERT overrides
+// ========================================
+
+[data-bs-theme="dark"] {
+  .alert-danger {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.2);
+    color: #FCA5A5;
+  }
+  .text-dark {
+    color: var(--wanda-text) !important;
+  }
+}
+
+// ========================================
+// PROGRESS BAR
+// ========================================
+
+.progress {
+  background-color: var(--wanda-bg-surface);
+  border-radius: 1rem;
+}
+
+// ========================================
+// Animation Keyframes
+// ========================================
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(15px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.25s ease-out; }
+.animate-slide-in   { animation: slideInRight 0.2s ease-out; }
+
+// ========================================
+// Mobile-First Layout Utilities
+// ========================================
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1030;
+  background: var(--wanda-bg-card);
+  border-top: 1px solid var(--wanda-border);
+  padding: 0.5rem 0;
+  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  @media (min-width: 992px) { display: none !important; }
+}
+
+.main-content {
+  padding-bottom: 5rem;
+  @media (min-width: 992px) { padding-bottom: 2rem; }
+}
+
+.sidebar {
+  display: none;
+  @media (min-width: 992px) {
+    display: block;
+    position: sticky;
+    top: 3.5rem;
+    height: calc(100vh - 3.5rem);
+    overflow-y: auto;
+  }
+}
+
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Avatar
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &-sm { width: 32px; height: 32px; font-size: 0.75rem; }
+  &-md { width: 40px; height: 40px; font-size: 0.875rem; }
+  &-lg { width: 56px; height: 56px; font-size: 1.125rem; }
+  &-xl { width: 80px; height: 80px; font-size: 1.5rem; }
+}
+
+// Reaction buttons
+.wanda-reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--wanda-bg-surface);
+  border: 1px solid var(--wanda-border);
+  color: var(--wanda-text-secondary);
+
+  &:hover {
+    border-color: var(--wanda-blue);
+    color: var(--wanda-blue);
+    background: rgba($wanda-blue, 0.06);
+  }
+
+  &.active {
+    background: rgba($wanda-blue, 0.1);
+    border-color: var(--wanda-blue);
+    color: var(--wanda-blue);
+  }
+}
+
+// Category badges
+.category-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Auth pages
+.auth-page {
+  background-color: var(--wanda-bg) !important;
+}
+
+// ========================================
+// VIEW TRANSITION — circular theme propagation
+// ========================================
+
+// Disable default crossfade, keep old view always visible
+::view-transition-old(root) {
+  animation: none;
+  z-index: 1;
+}
+
+// The new theme expands as a circle from the toggle button
+::view-transition-new(root) {
+  animation: none;
+  z-index: 9999;
+  mix-blend-mode: normal;
+}
+
+// ========================================
+// Navbar — centered search (absolute)
+// ========================================
+
+.wanda-navbar {
+  .wanda-search-centered {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 400px;
+    width: 100%;
+    pointer-events: auto;
+  }
+}
