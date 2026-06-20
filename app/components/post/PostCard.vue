@@ -275,7 +275,7 @@ const timeAgo = computed(() => {
 
 /* Mobile */
 @media (max-width: 575.98px) {
-  .post-action-btn span {
+  .post-action-btn span:not(.post-count) {
     display: none;
   }
 
